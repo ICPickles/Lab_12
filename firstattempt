@@ -1,0 +1,48 @@
+#!/bin/bash
+# Error message display if arguments invalid
+#
+if [$*= 0]; then
+	echo "Invalid argument, please retry"
+	exit 1
+fi
+#
+# Set variables
+#
+Username= $1 || exit
+#
+echo Setting things up...
+# Make a New User and Add them to group
+groupadd --gid 710 New Users && useradd -m -u 709 -g 710 $1 || exit
+echo Welcome $1 to Group 710
+#
+#
+passwd $1
+#
+#
+#Give permission to the files
+chown -r +709:710 /home/$1
+#
+#Making directories if they don't exist already
+#
+#
+if [cat /etc/profile ]
+then 
+	exit
+else
+	mkdir /etc/profile
+fi
+#
+#
+#
+
+if [cat /etc/bashrc]
+then
+	exit
+else
+	mkdir /etc/bashrc
+fi
+#
+#
+
+
+

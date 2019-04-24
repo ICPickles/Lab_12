@@ -1,0 +1,69 @@
+#!/bin/bash
+Default_password=toor
+#function
+function showhlp() {
+	echo "USAGE: makeuser [username] [login name] run all in sudo"
+}
+function checkStatus() {
+if [ $? -ne 0 ]; then
+	echo "Error: $1"
+fi
+}
+#Check to see if user is in root
+if [ $EUID -ne 0 ]; then
+	echo "log in as root,shoot"
+	exit 1
+fi
+# Error message display if arguments invalid
+#
+if [ $# -lt 2 ]; then
+	echo "Invalid argument, please retry"
+	showhlp
+	exit 1
+fi
+#
+#
+#
+echo Setting things up...
+# Set up variables
+Username=$1
+Login=$2
+Groupname=${Username}-group
+# Create a new group
+#
+groupadd $Groupname
+echo Welcome to Group
+#check status
+#
+checkStatus "Failed to create group"
+#
+#create new user
+useradd -d /home/$Username -g $Groupname -c $Login $Username
+checkStatus "failed to create new user"
+#
+#
+echo $Default_password | passwd --stdin $Username
+# set the defualt password for the user
+passwd -e $Username
+# Give it bashrc and bashprofile
+if [ -f /etc/profile ]; then
+	cp /etc/profile /home/$Username/.bash_profile
+else
+	touch /home/$Username/.bash_profile
+fi
+#
+#
+if [ -f /etc/bashrc ]; then
+        cp /etc/bashrc /home/$Username/.bashrc
+else
+        touch /home/$Username/.bashrc
+fi
+
+#
+#Own it
+#
+#
+chown $Username:$Groupname -R /home/$Username
+
+
+
